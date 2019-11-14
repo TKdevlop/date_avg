@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="date" id="from_date">
+    <input type="date" id="to_date">
+    <button id="handle_submit">GET CONSUMPTION</button>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/moment.min.js"></script>
+    <script src="./data.js"></script>
+    <script src="./new.js"></script>
+    <!-- <script>
+        // var from_date = document.getElementById("from_date");
+        // var to_date = document.getElementById("to_date");
+        var consumptions = {
+            foc: 0,
+            distance: 0,
+            avg_speed: 0,
+            avg_rpm: 0,
+            avg_wind_force: 0,
+            avg_wave_height: 0,
+            avg_swell_height: 0
+        }
+        var AvgArr = []
+        var mini_List = [];
+        function construct_mini_arr(from_date, to_date) {
+            for (var i = 0; i < data.length; i++) {
+                if(new Date(data[i].date) > new Date(from_date)){
+                    if(mini_List.length === 0){
+                        if(i!==0){
+                            if(data[i - 1].actual_rpm !== "-"){
+                                mini_List.push(data[i-1])
+                            }
+                        }else {
+                            if(data[i].actual_rpm !== "-"){
+                                 mini_List.push(data[i])
+                            }
+                        }
+                    }
+                    if (data[i].actual_rpm !== "-") {
+                                mini_List.push(data[i])
+                    }
+                }
+                if(new Date(data[i].date) >= new Date(to_date)) {
+                    if (data[i+1]){
+                        if(data[i+1].actual_rpm !== "-"){
+                          
+                            mini_List.push(data[i+1])
+                        }
+                    } 
+                    break;
+                }
+            //     if (data[i].actual_rpm === "-") continue;
+                
+            //     if (new Date(from_date) < new Date(data[i].date) &&
+            //         new Date(to_date) > new Date(data[i].date)) {
+            //             console.log("MATCHED")
+            //         data[i].index = i
+            //         mini_List.push(data[i])
+            //     }
+            //     else if (moment(data[i].date).isAfter(to_date)) {
+            //         break;
+            //     }
+            // }
+            // if(mini_List.length === 0){
+            //     for (var j = 0; j < data.length; j++) {
+            //         if (new Date(from_date) < new Date(data[j].date)) {
+            //                     data[i].index = i
+            //                     mini_List[0] = data[j]
+            //                     break;
+            //         }
+            //     }
+                 
+            // }
+            // if (mini_List[0]) {
+            //     if(data[mini_List[0].index - 1]){
+            //         if (data[mini_List[0].index - 1].actual_rpm !== "-") {
+            //             mini_List.unshift(data[mini_List[0].index - 1])
+            //         }
+            //     }    
+            // }
+            // if (mini_List[mini_List.length - 1] && mini_List.length !==1 ) {
+            //     if(data[mini_List[mini_List.length - 1].index + 1]){
+            //         if (data[mini_List[mini_List.length - 1].index + 1].actual_rpm !== "-") {
+            //             mini_List.push(data[mini_List[mini_List.length - 1].index + 1])
+            //         }
+            //     }
+            // }
+        }
+    }
+        function getConsumtions(from_date, to_date) {
+            for (var i = 0; i < mini_List.length; i++) {
+                if (i === 0) {
+                    if(new Date(mini_List[i].date) <= new Date(from_date)) continue
+                    // if((moment(mini_List[i].date).diff(moment(from_date), 'minutes'))< 0){
+                    //     // console.log("(moment(from_date).diff(moment(mini_List[i].date)", moment(from_date).diff(moment(mini_List[i].date), 'minutes'))
+                    //     continue;
+                    //     // console.log("((moment(from_date).diff(moment(mini_List[i].date), 'minutes'))",
+                    //     // (moment(mini_List[i+1].date).diff(moment(mini_List[i].date), 'minutes')) / 60)
+                       
+                    // }
+                    else {
+                        AvgArr.push({
+                            time: ((moment(mini_List[i].date).diff(moment(from_date), 'minutes')) / 60),
+                            speed: mini_List[i].actual_speed,
+                            rpm: mini_List[i].actual_rpm,
+                            wind_force: mini_List[i].wind_force,
+                            wave_height: mini_List[i].wave_height,
+                            swell_height: mini_List[i].swell_height,
+
+                        })
+                    }
+                   
+
+                    var a = moment(mini_List[i].date);
+                    // console.log("mini_List[i].date", mini_List[i].date, "from_date", from_date)
+                    var b = moment(from_date);
+                    var noOfRemaingHours = ((a.diff(b, 'minutes')) / 60)
+                    // console.log(mini_List[i])
+                    var distance_covered = mini_List[i].distance
+                    console.log("DISTANCE", distance_covered)
+                    console.log(" noOfRemaingHours", noOfRemaingHours)
+                    var hours = (distance_covered / mini_List[i].actual_speed)
+                    var fuelUsedPerHour = distance_covered / mini_List[i].actual_speed
+                    console.log(" noOfRemaingHours", noOfRemaingHours, hours)
+                    if (noOfRemaingHours > hours) {
+                        if (parseFloat(mini_List[i].foc) !== "NaN") {
+                            consumptions['foc'] += parseFloat(mini_List[i].foc)
+                        }
+                        if (parseFloat(mini_List[i].distance) !== "NaN") {
+                            consumptions['distance'] += parseFloat(mini_List[i].distance)
+                        }
+                    
+                    }
+                    else {
+                       var newDistance =  noOfRemaingHours *  mini_List[i].actual_speed
+                        var newFoc = (mini_List[i].foc/ hours) * noOfRemaingHours
+                       if (parseFloat(mini_List[i].distance) !== "NaN") {
+                            consumptions['distance'] += newDistance
+                        }
+                         if (parseFloat(mini_List[i].foc) !== "NaN") {
+                            //  console.log("parseFloat(newDistance / mini_List[i].actual_speed)", parseFloat(newDistance / mini_List[i].actual_speed))
+                            consumptions['foc'] += newFoc
+                        }
+                        // var hoursUsed = hours - noOfRemaingHours;
+                        // if (parseFloat(mini_List[i].foc) !== "NaN") {
+                        //     consumptions['foc'] += parseFloat(fuelUsedPerHour * hoursUsed)
+                        // }
+                        // if (parseFloat(mini_List[i].distance) !== "NaN") {
+                        //     consumptions['distance'] += hoursUsed * mini_List[i].actual_speed
+                        // }
+                        // console.log("FUELLLL",fuelUsedPerHour, hoursUsed, mini_List[i].actual_speed)
+                    }
+                }
+                else if (i === mini_List.length - 1) {
+                    console.log("Date", mini_List[i].date,to_date)
+                    if((moment(to_date).diff(moment(mini_List[i - 1].date), 'minutes')) <0 ) {
+                        continue
+                    }
+                    AvgArr.push({
+                        time:parseFloat((moment(to_date).diff(moment(mini_List[i-1].date), 'minutes') )/ 60),
+                        speed: mini_List[i].actual_speed,
+                        rpm: mini_List[i].actual_rpm,
+                        wind_force: mini_List[i].wind_force,
+                        wave_height: mini_List[i].wave_height,
+                        swell_height: mini_List[i].swell_height,
+                    })
+                    var a = moment(mini_List[i-1].date);
+                    var b = moment(to_date);
+                    // console.log("b.diff(a, 'minutes')", b.diff(a, 'minutes'))
+                    var noOfRemaingHours = ((b.diff(a, 'minutes')) / 60)
+                    // var dis = 
+                    // var c =  moment((data[i-1].date));
+                    var distance_covered = mini_List[i].distance - mini_List[i - 1].distance;
+                    // console.log("DISTANCE", distance_covered)
+                    // console.log(" noOfRemaingHours", noOfRemaingHours)
+                    var hours = (distance_covered / mini_List[i].actual_speed)
+                    var fuelUsedPerHour = distance_covered / mini_List[i].actual_speed
+                    // console.log(" noOfRemaingHours", noOfRemaingHours, hours)
+                    if (noOfRemaingHours > hours) {
+                        if (parseFloat(mini_List[i].foc) !== "NaN") {
+                            consumptions['foc'] += parseFloat(mini_List[i].foc)
+                        }
+                        if (parseFloat(mini_List[i].distance) !== "NaN") {
+                            consumptions['distance'] += parseFloat(mini_List[i].distance) -consumptions['distance'] 
+                        }
+                    }
+                    else {
+                        // var hoursUsed = hours - noOfRemaingHours;
+                        //   console.log("FUELLLL", fuelUsedPerHour, hoursUsed, mini_List[i].actual_speed)
+                        // if (parseFloat(mini_List[i].foc) !== "NaN") {
+                        //     consumptions['foc'] += parseFloat(fuelUsedPerHour * hoursUsed)
+                        // }
+                        // if (parseFloat(mini_List[i].distance) !== "NaN") {
+                        //     consumptions['distance'] += hoursUsed * mini_List[i].actual_speed
+                        // }
+                          var newDistance = noOfRemaingHours * mini_List[i].actual_speed
+                             var newFoc = (mini_List[i].foc / hours) * noOfRemaingHours
+                        if (parseFloat(mini_List[i].distance) !== "NaN") {
+                            consumptions['distance'] += newDistance
+                        }
+                        if (parseFloat(mini_List[i].foc) !== "NaN") {
+                            consumptions['foc'] += parseFloat(mini_List[i].foc)
+                        }
+                        
+                    }
+                }
+                else {
+                    if (new Date(mini_List[i].date) > new Date(to_date)) {
+                       
+                        var a = moment(mini_List[i].date);
+                        var b = moment(to_date);
+                        // console.log("b.diff(a, 'minutes')", b.diff(a, 'minutes'))
+                        
+                        var noOfRemaingHours = ((a.diff(b, 'minutes')) / 60)
+                        var use_time =  moment(mini_List[i].date).subtract(noOfRemaingHours *60, 'minutes')
+                        // var dis = 
+                        // var c =  moment((data[i-1].date));
+                        var distance_covered = mini_List[i].distance - mini_List[i - 1].distance;
+                            console.log(" noOfRemaingHours", noOfRemaingHours)
+                        // console.log("DISTANCE", distance_covered)
+                        // console.log(" noOfRemaingHours", noOfRemaingHours)
+                        var hours = (distance_covered / mini_List[i].actual_speed)
+                        var fuelUsedPerHour = distance_covered / mini_List[i].actual_speed
+                        console.log(" noOfRemaingHours", noOfRemaingHours, hours)
+                        // console.log(" use_time ", ((use_time.diff(b, 'minutes')) / 60))
+                          AvgArr.push({
+                            // time: ((use_time.diff(moment(mini_List[i].date), 'minutes')) / 60),
+                            // (moment(mini_List[i].date).diff(moment(mini_List[i - 1].date), 'minutes') / 60),
+                            speed: mini_List[i].actual_speed,
+                            rpm: mini_List[i].actual_rpm,
+                            wind_force: mini_List[i].wind_force,
+                            wave_height: mini_List[i].wave_height,
+                            swell_height: mini_List[i].swell_height,
+                        })
+                        if (noOfRemaingHours > hours) {
+                            if (parseFloat(mini_List[i].foc) !== "NaN") {
+                                consumptions['foc'] += parseFloat(mini_List[i].foc)
+                            }
+                            if (parseFloat(mini_List[i].distance) !== "NaN") {
+                                if(mini_List.length===1){
+                                    
+                                }
+                                consumptions['distance'] += parseFloat(mini_List[i].distance) - parseFloat(mini_List[i-1].distance)
+                            }
+                        }
+                        else {
+                            // var hoursUsed = hours - noOfRemaingHours;
+                            //   console.log("FUELLLL", fuelUsedPerHour, hoursUsed, mini_List[i].actual_speed)
+                            // if (parseFloat(mini_List[i].foc) !== "NaN") {
+                            //     consumptions['foc'] += parseFloat(fuelUsedPerHour * hoursUsed)
+                            // }
+                            // if (parseFloat(mini_List[i].distance) !== "NaN") {
+                            //     consumptions['distance'] += hoursUsed * mini_List[i].actual_speed
+                            // }
+                            var newDistance = noOfRemaingHours * mini_List[i].actual_speed
+                            var newFoc = (mini_List[i].foc / hours) * noOfRemaingHours
+                            if (parseFloat(mini_List[i].distance) !== "NaN") {
+                                consumptions['distance'] += newDistance
+                            }
+                            if (parseFloat(mini_List[i].foc) !== "NaN") {
+                                consumptions['foc'] += parseFloat(mini_List[i].foc)
+                            }
+
+                        } 
+                    }
+                    else {
+                        if (parseFloat(mini_List[i].foc) !== "NaN") {
+                            consumptions['foc'] += parseFloat(mini_List[i].foc)
+                        }
+                        if (parseFloat(mini_List[i].distance) !== "NaN") {
+                            consumptions['distance'] += parseFloat(mini_List[i].distance) - parseFloat(mini_List[i - 1].distance)
+                        }
+
+                        if (parseFloat(mini_List[i].actual_speed) !== "NaN") {
+                            console.log("mini_List[i - 1]", mini_List[i - 1])
+                            AvgArr.push({
+                                time: (moment(mini_List[i].date).diff(moment(mini_List[i - 1].date), 'minutes') / 60),
+                                speed: mini_List[i].actual_speed,
+                                rpm: mini_List[i].actual_rpm,
+                                wind_force: mini_List[i].wind_force,
+                                wave_height: mini_List[i].wave_height,
+                                swell_height: mini_List[i].swell_height,
+                            })
+
+                        }
+                    }
+                   
+                }
+            }
+        }
+        
+        
+        // function getAvgConsumtion(from_date, to_date) {
+
+        //     for (var i = 0; i < data.length; i++) {
+        //         if (data[i].actual_rpm === "-") continue;
+        //         console.log(data[i].date, from_date)
+        //         moment('2010-10-20').isBefore('2010-10-21')
+        //         // if(new Date(data[i].date) <= new Date(from_date)){
+        //         //     console.log("FROM_DATE")
+        //         //     data[i].index = i
+        //         //             mini_List.push(data[i])
+        //         // }
+        //         if (moment(data[i].date).isAfter(from_date) && moment(data[i].date).isBefore(to_date)) {
+        //             data[i].index = i
+        //             mini_List.push(data[i])
+        //         }
+        //         // if(moment(data[i].date).isBefore(to_date) && moment(data[i].date).isAfter(from_date)){
+        //         //       data[i].index = i
+        //         //     mini_List.push(data[i])
+        //         // }
+        //         if (new Date(from_date) < new Date(data[i].date) &&
+        //             new Date(to_date) > new Date(data[i].date)) {
+        //             // console.log(data[i])
+        //             if (parseFloat(data[i].foc) !== "NaN") {
+        //                 consumptions['foc'] += parseFloat(data[i].foc)
+        //             }
+        //             if (parseFloat(data[i].distance) !== "NaN") {
+        //                 consumptions['distance'] += parseFloat(data[i].distance)
+        //             }
+        //             if (parseFloat(data[i].distance) !== "NaN") {
+        //                 consumptions['distance'] += parseFloat(data[i].distance)
+        //             }
+        //             if (parseFloat(data[i].actual_speed) !== "NaN") {
+        //                 // console.log("moment(data[i].date).diff(moment(from_date), 'minutes')",moment(data[i].date).diff(moment(from_date), 'minutes'))
+        //                 if (i === 0) {
+        //                     AvgArr.push({
+        //                         time: ((moment(data[i].date).diff(moment(from_date), 'minutes')) / 60).toFixed(2),
+        //                         speed: data[i].actual_speed
+        //                     })
+        //                 }
+        //                 else if (data[i + 1]) {
+        //                     AvgArr.push({
+        //                         time: (moment(data[i + 1].date).diff(moment(data[i]), 'minutes') / 60).toFixed(2),
+        //                         speed: data[i].actual_speed
+        //                     })
+        //                 }
+        //             }
+
+        //         }
+        //         else {
+        //             // console.log(data[i-1].date,data[i].date )
+        //             var a = moment(data[i].date);
+        //             var b = moment(to_date);
+        //             var noOfRemaingHours = ((a.diff(b, 'minutes')) / 60).toFixed(2)
+        //             // var dis = 
+        //             // var c =  moment((data[i-1].date));
+        //             var distance_covered = data[i].distance - data[i - 1].distance;
+        //             console.log("DISTANCE", distance_covered)
+        //             console.log(" noOfRemaingHours", noOfRemaingHours)
+        //             var hours = (distance_covered / data[i].actual_speed).toFixed(2)
+        //             var fuelUsedPerHour = distance_covered / data[i].actual_spee
+        //             console.log(" noOfRemaingHours", noOfRemaingHours, hours)
+        //             if (noOfRemaingHours > hours) {
+        //                 if (parseFloat(data[i].foc) !== "NaN") {
+        //                     consumptions['foc'] += parseFloat(data[i].foc)
+        //                 }
+        //                 if (parseFloat(data[i].distance) !== "NaN") {
+        //                     consumptions['distance'] += parseFloat(data[i].distance)
+        //                 }
+        //             }
+        //             else {
+        //                 var hoursUsed = hours - noOfRemaingHours;
+        //                 if (parseFloat(data[i].foc) !== "NaN") {
+        //                     consumptions['foc'] += parseFloat(fuelUsedPerHour * hoursUsed)
+        //                 }
+        //                 if (parseFloat(data[i].distance) !== "NaN") {
+        //                     consumptions['distance'] += hoursUsed * data[i].actual_speed
+        //                 }
+        //             }
+        //             console.log(" a.diff(b, 'hours') ", a.diff(b, 'minutes'))// 1
+        //             break;
+        //         }
+
+        //         // if(more_exist && data[i+1]){
+
+        //         // }
+        //     }
+        //     if (new Date(data[data.length - 1].date) < new Date(to_date)) {
+        //         AvgArr.push({
+        //             time: (moment(data[data.length - 1].date).diff(moment(to_date), 'minutes') / 60).toFixed(2),
+        //             speed: data[data.length - 1].actual_speed
+        //         })
+        //     }
+        //     // console.log("AvgArr",AvgArr)
+        //     console.log("MINI", mini_List)
+
+        // }
+
+        // getAvgConsumtion('2019-10-31 00:00:00+00:00', '2019-11-01 00:00:00+00:00')
+        start_date = '2019-10-31 01:00:00+00:00'
+        end_date = '2019-10-31 03:00:00+00:00'
+         construct_mini_arr(start_date,end_date )
+               console.log("MINI ARR", mini_List)
+        getConsumtions(start_date, end_date);
+  
+        
+        console.log("AVG",AvgArr)
+        var total_time = 0;
+        var total_speed = 0;
+        var total_rpm = 0;
+        var total_swell_height = 0;
+        var total_wave_height = 0;
+        var total_wind_force = 0;
+        for(var j=0; j<AvgArr.length; j++){
+            total_time+=AvgArr[j].time;
+            total_speed+= AvgArr[j].time * AvgArr[j].speed;
+            total_rpm += AvgArr[j].time * AvgArr[j].rpm;
+            total_swell_height+= AvgArr[j].time * AvgArr[j].swell_height;
+            total_wave_height+= AvgArr[j].time * AvgArr[j].wave_height;
+            total_wind_force+= AvgArr[j].time * AvgArr[j].wind_force;
+        }
+     consumptions.avg_speed = total_speed/total_time;
+     consumptions.avg_rpm = total_rpm/total_time;
+     consumptions.avg_swell_height = total_swell_height/total_time;
+     consumptions.avg_wave_height = total_wave_height/total_time;
+     consumptions.avg_wind_force = total_wind_force/total_time;
+     console.log(consumptions);
+    </script> -->
+
+<!-- <script src="./simple.js"></script> -->
+
+</body>
+
+</html>
